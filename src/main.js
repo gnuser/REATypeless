@@ -1,3 +1,4 @@
+const { speechModel, recognitionArgs } = require("./speech");
 const { polishWithCodex } = require("./codex-polish");
 "use strict";
 const {
@@ -49,7 +50,7 @@ const { validate: validateShortcuts } = require("./shortcuts");
 let shortcutCapturing = false,
   shortcutTimer,
   internalInput = null;
-const model = path.join(resources, "models", "ggml-small-q5_1.bin");
+
 let main,
   overlay,
   tray,
@@ -67,6 +68,7 @@ const defaults = {
   translation: "English",
   polish: false,
   polishProvider: "local",
+  speechModel: "auto",
   tone: "Natural",
   autoPaste: true,
   launchAtLogin: false,
@@ -90,8 +92,9 @@ function snapshot() {
     stats: stats(data.history),
     phase: session?.phase || "idle",
     runtime: {
+      speechModel: path.basename(speechModel(resources, data.settings, fs.existsSync)),
       speech:
-        fs.existsSync(model) &&
+        fs.existsSync(speechModel(resources, data.settings, fs.existsSync)) &&
         fs.existsSync(tool["whisper-cli"]) &&
         fs.existsSync(tool["ffmpeg"]),
       ai:
@@ -194,7 +197,8 @@ async function toggle(mode = "dictate", fromUI = false) {
   };
   session = current;
   try {
-    if (!fs.existsSync(model))
+    current.model = speechModel(resources, current.options, fs.existsSync);
+    if (!fs.existsSync(current.model))
       throw Error("Speech model is missing. Reinstall REATypeless.");
     if (!fs.existsSync(tool["whisper-cli"]) || !fs.existsSync(tool["ffmpeg"]))
       throw Error(
@@ -299,25 +303,7 @@ async function receiveAudio(id, bytes, duration) {
       ["-v", "error", "-i", input, "-ar", "16000", "-ac", "1", wav],
       { windowsHide: true, timeout: 30000, signal: current.controller.signal },
     );
-    const args = [
-      "-m",
-      model,
-      "-f",
-      wav,
-      "-l",
-      current.options.language,
-      "-otxt",
-      "-of",
-      out,
-      "-nt",
-      "-t",
-      "6",
-    ];
-    const terms = data.dictionary
-      .map((w) => w.to)
-      .join(", ")
-      .slice(0, 1200);
-    if (terms) args.push("--prompt", terms);
+    const args = recognitionArgs(current.model, wav, out, current.options.language, data.dictionary);
     await run(tool["whisper-cli"], args, {
       windowsHide: true,
       timeout: 150000,
@@ -340,7 +326,7 @@ async function receiveAudio(id, bytes, duration) {
       );
       try {
         text = current.mode === "dictate" && current.options.polishProvider === "codex"
-          ? await polishWithCodex(raw, current.controller.signal)
+          ? await polishWithCodex(raw, current.controller.signal, { dictionary: data.dictionary })
           : await localAI.transform(
           raw,
           current.mode,
@@ -623,6 +609,7 @@ ipcMain.handle("save-settings", (e, values) => {
   if (!["zh", "en"].includes(next.uiLanguage))
     throw Error("Unsupported interface language.");
   if (!["local", "codex"].includes(next.polishProvider)) throw Error("Unsupported polishing provider.");
+  if (!["auto", "small"].includes(next.speechModel)) throw Error("Unsupported speech model.");
   validateShortcuts(next);
   endShortcutCapture();
   const failed = registerShortcuts(next);
@@ -639,7 +626,12 @@ ipcMain.handle("save-settings", (e, values) => {
 });
 ipcMain.handle("dictionary", (e, operation, value) => {
   checkSender(e);
-  if (operation === "add") {
+  if (operation === "developer-terms") {
+    for (const to of ["API", "bug", "Codex", "GitHub", "inventory", "leaderboard", "main", "Roblox", "settings", "UI"]) {
+      if (!data.dictionary.some(w => w.to.toLowerCase() === to.toLowerCase()))
+        data.dictionary.push({ id: crypto.randomUUID(), to, from: "" });
+    }
+  } else if (operation === "add") {
     const to = String(value.to || "")
         .trim()
         .slice(0, 150),

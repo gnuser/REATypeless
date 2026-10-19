@@ -196,6 +196,7 @@ document.addEventListener("click", async (e) => {
         ),
       );
     }
+    if (b.dataset.action === "developer-terms") await window.rea.dictionary("developer-terms");
     if (b.dataset.action === "new-word") $("word-dialog").showModal();
     if (b.id === "close-word") $("word-dialog").close();
     if (b.dataset.copy || b.dataset.copyRaw) {

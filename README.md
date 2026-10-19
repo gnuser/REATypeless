@@ -10,9 +10,17 @@
 - 快捷键通过直接按组合键设置，支持冲突提示。
 - 默认快速听写；需要时开启本地 AI 润色。中文听写输出简体中文，翻译遵循指定目标语言。
 - 录音计时、取消、历史记录、原文复制、词典和诊断信息复制。
-- 本地 Whisper Small 语音识别与 Qwen3 4B 文本处理，本地模式不使用远程推理服务；可选 Codex 润色需要联网。
+- 本地 Whisper Large v3 Turbo / Small 语音识别与 Qwen3 4B 文本处理，本地模式不使用远程推理服务；可选 Codex 润色需要联网。
 
 自动插入依赖目标应用提供的 macOS 辅助功能或 Windows UI Automation 信息，不能保证覆盖所有输入框。输入框关闭、内容变化或无法恢复光标时，请从历史记录复制结果。密码输入框不支持自动插入。
+
+## 减少错字和漏字
+
+默认“优先准确”会选择已安装的 Whisper Large v3 Turbo Q5（新增约 574 MB）；旧安装没有该文件时仍可使用 Small。运行 `npm run models:download` 获取模型，打包时会一并包含。在设置中可以选择 Small 节省内存。
+
+主要说中文、夹杂英文术语时，将“识别语言”设为“中文”，避免短句被自动判断成其他语言；纯英文使用 English。专有名词可加入词典；“添加开发常用词”可一次加入 API、bug、inventory、leaderboard 等词语。Codex 润色也会参考词典，选择联网润色时词典提示会与转录一同发送。识别与润色是两个独立步骤，润色不能保证找回漏识别的信息。
+
+`node scripts/evaluate-speech.js` 可在 macOS 用合成中文样例对比 Small 和 Turbo；这只是可复现的冒烟测试，不代表真实口音或噪声下的准确率。
 
 ## 可选 Codex 润色
 
@@ -65,7 +73,7 @@ npm run build:native
 npm start
 ```
 
-模型下载约 2.5 GB，需要连接 Hugging Face；脚本校验 SHA-256，已验证的文件不会重复下载。模型不包含在 Git 仓库中，各自许可证见 [第三方说明](THIRD_PARTY_NOTICES.txt)。首次运行与模型加载可能较慢。
+模型下载约 3.1 GB，需要连接 Hugging Face；脚本校验 SHA-256，已验证的文件不会重复下载。模型不包含在 Git 仓库中，各自许可证见 [第三方说明](THIRD_PARTY_NOTICES.txt)。首次运行与模型加载可能较慢。
 
 在系统设置中允许麦克风和辅助功能权限，然后回到目标输入框。开发模式的权限归属可能显示为 Electron；打包后为 REATypeless。界面语言和快捷键均在设置中修改并保存。
 
@@ -104,8 +112,8 @@ Electron 已固定为 43.8.0。当前 npm audit 仍可能报告打包工具经 `
 
 ## English
 
-REATypeless is a local voice dictation app with English / Simplified Chinese UI, configurable recorded shortcuts, optional AI polishing, translation, and spoken questions. Local mode requires no account or subscription. Optional Codex polishing sends transcript text to OpenAI using your CLI login and quota. Whisper Small handles speech recognition; Qwen3 4B handles text generation on your computer.
+REATypeless is a local voice dictation app with English / Simplified Chinese UI, configurable recorded shortcuts, optional AI polishing, translation, and spoken questions. Local mode requires no account or subscription. Optional Codex polishing sends transcript text to OpenAI using your CLI login and quota. Whisper Large v3 Turbo (or Small) handles speech recognition; Qwen3 4B handles text generation on your computer.
 
-**Source preview for Windows x64 and Apple Silicon macOS.** Windows requires Windows builds of whisper-cli, FFmpeg, and optionally llama-server in PATH or the runtime directory. Use `npm run build:native` and `npm start`; package with `npm run dist:win`. On Windows, focus the destination first, then start with a shortcut or return to the main window to record. Unsupported inputs fall back to History. Intel Mac has not been validated. Install Node.js 22.12+, Xcode Command Line Tools, and Homebrew in `/opt/homebrew`, then follow the commands above. Downloading models requires approximately 2.5 GB. Grant microphone and accessibility permissions before use.
+**Source preview for Windows x64 and Apple Silicon macOS.** Windows requires Windows builds of whisper-cli, FFmpeg, and optionally llama-server in PATH or the runtime directory. Use `npm run build:native` and `npm start`; package with `npm run dist:win`. On Windows, focus the destination first, then start with a shortcut or return to the main window to record. Unsupported inputs fall back to History. Intel Mac has not been validated. Install Node.js 22.12+, Xcode Command Line Tools, and Homebrew in `/opt/homebrew`, then follow the commands above. Downloading models requires approximately 3.1 GB. Grant microphone and accessibility permissions before use.
 
 Automatic insertion depends on the target app's accessibility support. If insertion cannot be confirmed, retrieve the result from History. Recordings are processed locally; saved transcripts are not encrypted. Dependency and model downloads require internet access. Packaged apps still require the external Homebrew runtimes and are not notarized. This repository is an independent MIT-licensed implementation, not affiliated with Typeless; third-party components retain their own licenses.

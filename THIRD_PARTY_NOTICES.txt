@@ -12,7 +12,7 @@ whisper.cpp — MIT
 https://github.com/ggml-org/whisper.cpp
 Whisper model distribution:
 https://huggingface.co/ggerganov/whisper.cpp
-Model: ggml-small-q5_1.bin
+Models: ggml-small-q5_1.bin, ggml-large-v3-turbo-q5_0.bin
 
 Qwen3 4B GGUF — Apache-2.0
 https://huggingface.co/Qwen/Qwen3-4B-GGUF
