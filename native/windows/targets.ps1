@@ -19,6 +19,7 @@ function Inspect-Target {
  $script:lastTarget = @{element=$element;pattern=$pattern;range=$ranges[0].Clone();before=$pattern.DocumentRange.GetText(-1);window=$window}
 }
 function Handle-Request($request) {
+ $script:pasteAttempted = $false
  switch ($request.op) {
   'status' { return @{status='ok'} }
   'release' { $sessions.Remove([string]$request.token); return @{status='ok'} }
@@ -72,6 +73,7 @@ function Handle-Request($request) {
    $suffix = $target.pattern.DocumentRange.Clone()
    $suffix.MoveEndpointByRange([System.Windows.Automation.Text.TextPatternRangeEndpoint]::Start,$target.range,[System.Windows.Automation.Text.TextPatternRangeEndpoint]::End)
    $expected = $prefix.GetText(-1) + $text + $suffix.GetText(-1)
+   $script:pasteAttempted = $true
    [System.Windows.Forms.SendKeys]::SendWait('^v')
    for ($i=0; $i -lt 20; $i++) {
     Start-Sleep -Milliseconds 25
