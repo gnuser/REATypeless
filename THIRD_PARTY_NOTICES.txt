@@ -23,7 +23,11 @@ https://github.com/ggml-org/llama.cpp
 
 FFmpeg — licensing depends on build configuration (LGPL/GPL components)
 https://ffmpeg.org/legal.html
-Not included in this source repository; installed externally using Homebrew.
+Not included in this source repository; installed externally using Homebrew on macOS, or from a Windows distribution. Preserve the Windows distribution license and source information when bundling it in runtime/.
 
 npm development dependencies retain their own licenses. See package-lock.json
 and the LICENSE / NOTICE files in each installed dependency.
+
+Koffi — MIT
+Windows foreground permission bridge, version 3.3.3.
+https://koffi.dev/

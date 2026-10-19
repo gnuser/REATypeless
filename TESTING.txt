@@ -21,3 +21,22 @@ Scope: Apple Silicon macOS source preview. Complete the README setup first.
 Include macOS version, chip, target app, steps, expected and actual behavior.
 请勿上传私人录音、历史记录、密码或密钥。
 Do not upload private audio, transcript history, passwords, or keys.
+
+
+Windows x64 checks
+- npm test: includes live PowerShell bridge status, UTF-8 simplified conversion, and invalid target rejection.
+- npm run build:native; npm start: allow desktop microphone access in Windows Settings.
+- With Windows builds of whisper-cli/ffmpeg and downloaded models, dictate in the app scratchpad.
+- In Notepad and a browser editable field, start/stop with the global shortcut. Verify the caret and selected replacement; delivery is confirmed only when the resulting document matches the expected text.
+- Change field contents while recording, close the destination, or use a password field: no automatic insertion; retrieve text from History.
+- Test both shortcuts and opening the main window before recording; the last external input and caret should be remembered.
+- Test cancellation, clipboard restoration, unavailable runtimes, denied microphone, and tray double-click.
+- npm run dist:win: inspect dist/win-unpacked; runtime DLLs and models must accompany the package.
+- npm run test:integration uses Windows System.Speech with an installed English voice; test:native remains macOS-only.
+
+Windows insertion regression fixture
+- Run node_modules/electron/dist/electron.exe tests/windows-input.fixture.cjs. It opens a disposable target and separate controls process.
+- Focus target textarea, then switch to controls and click Capture followed by Paste. Expect alpha 你好omega and status ok.
+- Capture with Ctrl+Alt+F9 while the textarea is focused; edit its text before Paste. Expect status edited and no extra insertion.
+- Focus the password field, then Capture. Expect unsupported with no token.
+- Close the controls window to stop the fixture and its target. Tests use isolated .tools profiles.
