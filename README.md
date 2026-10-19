@@ -1,8 +1,8 @@
 # REATypeless
 
-无需账号或订阅的本地语音输入工具。支持简体中文 / English 界面、语音转文字、可选 AI 润色、翻译和语音问答。
+本地语音输入模式无需账号或订阅。支持简体中文 / English 界面、语音转文字、可选 AI 润色、翻译和语音问答。
 
-**1.2.0 源码预览版：支持 Windows x64 和 Apple Silicon Mac。** Windows 输入支持仍需在实际目标应用中验证。当前需要自行安装运行依赖；不是开箱即用、已公证的安装包。
+**1.3.0 源码预览版：支持 Windows x64 和 Apple Silicon Mac。** Windows 输入支持仍需在实际目标应用中验证。当前需要自行安装运行依赖；不是开箱即用、已公证的安装包。
 
 ## 功能
 
@@ -10,9 +10,17 @@
 - 快捷键通过直接按组合键设置，支持冲突提示。
 - 默认快速听写；需要时开启本地 AI 润色。中文听写输出简体中文，翻译遵循指定目标语言。
 - 录音计时、取消、历史记录、原文复制、词典和诊断信息复制。
-- 本地 Whisper Small 语音识别与 Qwen3 4B 文本处理，无远程推理服务。
+- 本地 Whisper Small 语音识别与 Qwen3 4B 文本处理，本地模式不使用远程推理服务；可选 Codex 润色需要联网。
 
 自动插入依赖目标应用提供的 macOS 辅助功能或 Windows UI Automation 信息，不能保证覆盖所有输入框。输入框关闭、内容变化或无法恢复光标时，请从历史记录复制结果。密码输入框不支持自动插入。
+
+## 可选 Codex 润色
+
+安装新版 Codex CLI 并执行 `codex login`，在设置中开启“润色听写”，将“润色引擎”设为“Codex · 联网”并保存。此选项仅影响听写；翻译和问答仍使用本地 Qwen。
+
+语音仍由本地 Whisper 识别，转录文本通过 `codex exec` 发送到 OpenAI，使用现有 Codex 登录与可用额度。这不是离线模型，也不是调用 Codex 桌面内置语音。CLI 使用独立临时目录、临时会话和只读沙箱，不加载用户配置；保留原始转录，失败时不自动插入。无需复制登录令牌或填写 API Key。
+
+macOS 支持 Homebrew 或 PATH 中的 `codex`；其他安装位置可通过 `REATYPELESS_CODEX` 指定原生可执行文件路径。Windows 需要可直接执行的 `codex.exe`，暂不自动运行 npm 的 `.cmd` 包装器。近期 CLI 才支持所用参数；出现不支持参数错误时请升级 CLI。润色可改善口头语和标点，但无法可靠还原漏识别的信息。
 
 ## Windows 从源码运行
 
@@ -80,7 +88,7 @@ npm run dist
 
 在设置中查看或修改当前快捷键；按一次开始录音，再按一次停止。Escape 可取消。关闭主窗口后应用仍留在菜单栏，使用“退出”完全关闭。
 
-音频在本地临时处理，正常处理结束后删除。识别文本、历史记录和设置保存在 Electron 用户数据目录（通常为 `~/Library/Application Support/reatypeless/`），没有额外加密。Ask 模式可以读取选中的文字。自动插入可能使用系统剪贴板。模型下载和依赖安装需要联网，推理在本机执行。
+音频在本地临时处理，正常处理结束后删除。识别文本、历史记录和设置保存在 Electron 用户数据目录（通常为 `~/Library/Application Support/reatypeless/`），没有额外加密。Ask 模式可以读取选中的文字。自动插入可能使用系统剪贴板。模型下载和依赖安装需要联网，本地模式推理在本机执行；选择 Codex 润色后，转录文本会发往 OpenAI。
 
 提交问题时请先检查诊断内容，不要附上私人录音、完整历史记录、密码或密钥。简短测试步骤见 [TESTING.txt](TESTING.txt)。
 
@@ -96,7 +104,7 @@ Electron 已固定为 43.8.0。当前 npm audit 仍可能报告打包工具经 `
 
 ## English
 
-REATypeless is a local voice dictation app with English / Simplified Chinese UI, configurable recorded shortcuts, optional AI polishing, translation, and spoken questions. No account or subscription is required. Whisper Small handles speech recognition; Qwen3 4B handles text generation on your computer.
+REATypeless is a local voice dictation app with English / Simplified Chinese UI, configurable recorded shortcuts, optional AI polishing, translation, and spoken questions. Local mode requires no account or subscription. Optional Codex polishing sends transcript text to OpenAI using your CLI login and quota. Whisper Small handles speech recognition; Qwen3 4B handles text generation on your computer.
 
 **Source preview for Windows x64 and Apple Silicon macOS.** Windows requires Windows builds of whisper-cli, FFmpeg, and optionally llama-server in PATH or the runtime directory. Use `npm run build:native` and `npm start`; package with `npm run dist:win`. On Windows, focus the destination first, then start with a shortcut or return to the main window to record. Unsupported inputs fall back to History. Intel Mac has not been validated. Install Node.js 22.12+, Xcode Command Line Tools, and Homebrew in `/opt/homebrew`, then follow the commands above. Downloading models requires approximately 2.5 GB. Grant microphone and accessibility permissions before use.
 

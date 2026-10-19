@@ -78,9 +78,9 @@ function sidebar() {
     .join("");
   document.querySelector(".badge").textContent = t("Local", "本地");
   document.querySelector(".private-card").innerHTML =
-    `<span class="dot"></span>${t("Private by design", "本地处理，保护隐私")}<p>${t("On your computer.<br>No account. No limits.", "内容留在本机。<br>无需账号，无次数限制。")}</p>${button(t("Start dictating", "开始听写"), 'id="start-side"', "primary")}`;
+    `<span class="dot"></span>${t("Local speech recognition", "本地语音识别")}<p>${t("Audio stays local.<br>Codex polishing uses the cloud.", "录音留在本机。<br>Codex 润色需要联网。")}</p>${button(t("Start dictating", "开始听写"), 'id="start-side"', "primary")}`;
   document.querySelector(".sidebar-footer span").textContent =
-    state.version || "1.2.0";
+    state.version || "1.3.0";
   document
     .querySelector('[data-page="settings"]')
     .setAttribute("aria-label", t("Settings", "设置"));

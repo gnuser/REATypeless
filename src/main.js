@@ -1,3 +1,4 @@
+const { polishWithCodex } = require("./codex-polish");
 "use strict";
 const {
   app,
@@ -65,6 +66,7 @@ const defaults = {
   language: "auto",
   translation: "English",
   polish: false,
+  polishProvider: "local",
   tone: "Natural",
   autoPaste: true,
   launchAtLogin: false,
@@ -83,7 +85,7 @@ function snapshot() {
   return {
     ...data,
     platform: process.platform,
-    version: "1.2.0",
+    version: "1.3.0",
     started: session?.started || 0,
     stats: stats(data.history),
     phase: session?.phase || "idle",
@@ -337,7 +339,9 @@ async function receiveAudio(id, bytes, duration) {
             : "Polishing your words…",
       );
       try {
-        text = await localAI.transform(
+        text = current.mode === "dictate" && current.options.polishProvider === "codex"
+          ? await polishWithCodex(raw, current.controller.signal)
+          : await localAI.transform(
           raw,
           current.mode,
           current.options,
@@ -618,6 +622,7 @@ ipcMain.handle("save-settings", (e, values) => {
   }
   if (!["zh", "en"].includes(next.uiLanguage))
     throw Error("Unsupported interface language.");
+  if (!["local", "codex"].includes(next.polishProvider)) throw Error("Unsupported polishing provider.");
   validateShortcuts(next);
   endShortcutCapture();
   const failed = registerShortcuts(next);
@@ -732,7 +737,7 @@ ipcMain.handle("diagnostics", async (e) => {
     JSON.stringify(
       {
         app: "REATypeless",
-        version: "1.2.0",
+        version: "1.3.0",
         platform: process.platform,
         arch: process.arch,
         os: os.release(),
