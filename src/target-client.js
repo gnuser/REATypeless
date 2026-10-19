@@ -8,6 +8,8 @@ class TargetClient {
     this.spawn = options.spawn || spawn;
     this.allowForeground = options.allowForeground || allowHelperForeground;
     this.timeout = options.timeout || 5000;
+    this.startupTimeout = options.startupTimeout || 30000;
+    this.ready = new WeakSet();
     this.pending = new Map();
     this.serial = 0;
     this.child = null;
@@ -55,6 +57,7 @@ class TargetClient {
         }
         const entry = this.pending.get(reply.id);
         if (entry?.child !== child) continue;
+        this.ready.add(child);
         this.settle(reply.id, null, reply);
       }
     });
@@ -89,7 +92,7 @@ class TargetClient {
     return new Promise((resolve, reject) => {
       const timer = setTimeout(
         () => this.settle(id, Error("Input helper timed out.")),
-        this.timeout,
+        this.ready.has(child) ? this.timeout : this.startupTimeout,
       );
       this.pending.set(id, { resolve, reject, timer, child });
       try {
