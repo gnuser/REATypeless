@@ -4,9 +4,10 @@ const { EventEmitter } = require("node:events");
 const { PassThrough } = require("node:stream");
 const { TargetClient } = require("../src/target-client");
 
-function fixture() {
+function fixture(options = {}) {
   const children = [];
   const client = new TargetClient("helper", {
+    ...options,
     spawn() {
       const child = new EventEmitter();
       child.stdout = new PassThrough();
@@ -44,4 +45,21 @@ test("split UTF-8 responses survive chunk boundaries and close rejects pending w
   client.close();
   await assert.rejects(unfinished, /stopped/);
   assert.equal(client.pending.size, 0);
+});
+
+
+test('cold starts have a separate deadline and ready requests fail promptly', async (t) => {
+  t.mock.timers.enable({ apis: ['setTimeout'] });
+  const { client, children } = fixture({ timeout: 5, startupTimeout: 30 });
+  try {
+    const first = client.request('status');
+    t.mock.timers.tick(10);
+    children[0].stdout.write('{"id":1,"status":"ok"}\n');
+    assert.equal((await first).status, 'ok');
+    const next = client.request('status');
+    const rejected = assert.rejects(next, /timed out/);
+    t.mock.timers.tick(5);
+    await rejected;
+    assert.equal(client.pending.size, 0);
+  } finally { client.close(); }
 });
