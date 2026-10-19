@@ -1,0 +1,74 @@
+{
+  "name": "reatypeless",
+  "version": "1.2.0",
+  "description": "Private local voice dictation for macOS",
+  "main": "src/main.js",
+  "author": "gnuser",
+  "license": "MIT",
+  "scripts": {
+    "start": "electron .",
+    "test": "node --test tests/*.test.js",
+    "dist": "electron-builder --mac dir --publish never",
+    "build:native": "sh scripts/build-native.sh",
+    "build:icon": "sh scripts/build-icon.sh",
+    "test:native": "sh scripts/test-native.sh",
+    "test:integration": "sh scripts/make-test-audio.sh && node tests/pipeline.integration.js",
+    "models:download": "node scripts/download-models.js",
+    "predist": "npm run build:native && npm run build:icon"
+  },
+  "devDependencies": {
+    "electron": "43.8.0",
+    "electron-builder": "26.15.3"
+  },
+  "build": {
+    "appId": "local.reatypeless.desktop",
+    "productName": "REATypeless",
+    "asar": true,
+    "files": [
+      "src/**/*",
+      "package.json",
+      "LICENSE",
+      "THIRD_PARTY_NOTICES.txt"
+    ],
+    "extraResources": [
+      {
+        "from": "models",
+        "to": "models"
+      },
+      {
+        "from": "build/native",
+        "to": "native"
+      }
+    ],
+    "mac": {
+      "category": "public.app-category.productivity",
+      "identity": null,
+      "extendInfo": {
+        "NSMicrophoneUsageDescription": "REATypeless uses your microphone for private, on-device voice dictation."
+      },
+      "icon": "build/icon.icns",
+      "target": [
+        {
+          "target": "dir",
+          "arch": [
+            "arm64"
+          ]
+        }
+      ]
+    },
+    "directories": {
+      "output": "dist"
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gnuser/REATypeless.git"
+  },
+  "homepage": "https://github.com/gnuser/REATypeless",
+  "bugs": {
+    "url": "https://github.com/gnuser/REATypeless/issues"
+  },
+  "engines": {
+    "node": ">=22.12.0"
+  }
+}

@@ -1,0 +1,20 @@
+name: Bug report / 问题反馈
+description: Report a reproducible problem / 提交可复现的问题
+body:
+  - type: input
+    id: environment
+    attributes:
+      label: macOS version, chip, app version / 系统、芯片、应用版本
+    validations:
+      required: true
+  - type: input
+    id: target
+    attributes:
+      label: Target app / 目标应用
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps, expected and actual behavior / 步骤、预期与实际结果
+      description: Do not include private recordings, transcripts, passwords or keys. 请勿包含私人录音、文本、密码或密钥。
+    validations:
+      required: true

@@ -1,0 +1,29 @@
+REATypeless third-party components
+
+The repository's MIT license covers the REATypeless implementation only.
+Models and external runtimes are downloaded or installed separately. Preserve their
+licenses and notices when redistributing a packaged application.
+
+Electron — MIT and bundled third-party notices
+https://github.com/electron/electron
+https://github.com/electron/electron/blob/main/LICENSE
+
+whisper.cpp — MIT
+https://github.com/ggml-org/whisper.cpp
+Whisper model distribution:
+https://huggingface.co/ggerganov/whisper.cpp
+Model: ggml-small-q5_1.bin
+
+Qwen3 4B GGUF — Apache-2.0
+https://huggingface.co/Qwen/Qwen3-4B-GGUF
+Model: Qwen3-4B-Q4_K_M.gguf
+
+llama.cpp — MIT
+https://github.com/ggml-org/llama.cpp
+
+FFmpeg — licensing depends on build configuration (LGPL/GPL components)
+https://ffmpeg.org/legal.html
+Not included in this source repository; installed externally using Homebrew.
+
+npm development dependencies retain their own licenses. See package-lock.json
+and the LICENSE / NOTICE files in each installed dependency.

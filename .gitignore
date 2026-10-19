@@ -1,0 +1,16 @@
+node_modules/
+.tools/
+models/
+build/
+dist/
+evidence/
+.DS_Store
+.env
+.env.*
+*.log
+*.pem
+*.key
+*.p12
+*.pfx
+scripts/rea
+native/output-legacy.swift.txt

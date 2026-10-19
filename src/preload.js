@@ -1,0 +1,7 @@
+const {contextBridge,ipcRenderer}=require('electron');
+contextBridge.exposeInMainWorld('rea',{
+ rememberInput:value=>ipcRenderer.send('remember-input',value),onInsertInput:fn=>ipcRenderer.on('insert-input',(_,value)=>fn(value)),
+ shortcutCapture:active=>ipcRenderer.invoke('shortcut-capture',active),onShortcutCaptureEnd:fn=>ipcRenderer.on('shortcut-capture-ended',fn),
+ state:()=>ipcRenderer.invoke('get-state'),toggle:mode=>ipcRenderer.invoke('toggle',mode),cancel:()=>ipcRenderer.invoke('cancel'),saveSettings:values=>ipcRenderer.invoke('save-settings',values),dictionary:(op,value)=>ipcRenderer.invoke('dictionary',op,value),copy:(id,raw=false)=>ipcRenderer.invoke('copy',id,raw),diagnostics:()=>ipcRenderer.invoke('diagnostics'),deleteHistory:id=>ipcRenderer.invoke('delete-history',id),export:()=>ipcRenderer.invoke('export'),permission:type=>ipcRenderer.invoke('permission',type),permissions:()=>ipcRenderer.invoke('permissions'),openPrivacy:type=>ipcRenderer.invoke('open-privacy',type),
+ onState:fn=>ipcRenderer.on('state',(_,value)=>fn(value)),onNotice:fn=>ipcRenderer.on('notice',(_,value)=>fn(value)),onStatus:fn=>ipcRenderer.on('status',(_,value)=>fn(value)),onCapture:fn=>ipcRenderer.on('capture',(_,value)=>fn(value)),started:id=>ipcRenderer.send('started',id),audio:(id,bytes,duration)=>ipcRenderer.send('audio',id,bytes,duration),captureError:(id,message)=>ipcRenderer.send('capture-error',id,message)
+});

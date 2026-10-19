@@ -1,0 +1,23 @@
+REATypeless 1.2.0 — 测试说明 / Tester checklist
+
+范围：Apple Silicon Mac 源码预览版；请先完成 README 的安装和权限步骤。
+Scope: Apple Silicon macOS source preview. Complete the README setup first.
+
+1. 切换中文 / English 界面，保存并重启，确认选择保留。
+   Switch UI language, save, restart, and confirm the preference persists.
+2. 点击快捷键设置，直接按组合键并保存；尝试重复组合键，确认冲突提示。
+   Record and save a shortcut; try a duplicate and check the conflict message.
+3. 在另一应用的句子中间放置光标，分别用按钮、全局快捷键录音并停止。
+   Put the caret inside another app's sentence; test button and shortcut recording.
+4. 确认文字插入原位置；再测试选中文字替换、取消录音、关闭目标输入框。
+   Check insertion, selected-text replacement, cancellation, and a closed target field.
+5. 说一段中文和英文，检查简体中文输出、原文复制和可选润色。
+   Dictate Chinese and English; check simplified output, raw copy, and optional polishing.
+6. 自动插入失败时，确认可以从历史记录复制结果。
+   When insertion fails, confirm the result remains available in History.
+
+反馈：https://github.com/gnuser/REATypeless/issues
+请注明 macOS 版本、芯片、目标应用、复现步骤、预期和实际结果。
+Include macOS version, chip, target app, steps, expected and actual behavior.
+请勿上传私人录音、历史记录、密码或密钥。
+Do not upload private audio, transcript history, passwords, or keys.
